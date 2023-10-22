@@ -238,7 +238,7 @@ body {
   color: white;
 }
 
-.round__container:not(:has(.round-column-bet)) .round-column {
+.round-column:not(:has(.round-column-bet)) {
   background-color: white;
 }
 

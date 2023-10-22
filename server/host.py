@@ -91,17 +91,18 @@ class Game:
       return
     player = self.getPlayer(side)
     player.timer.stop()
+    if amount > player.balance:
+      warn("Betting more than balance, maximum balance placed as bet")
+      amount = player.balance
+    if amount < 0:
+      warn("Betting negative amount is not allowed, amount set to 0")
+      amount = 0
     print("Player {} ({}) put ${}".format(side, player.name, amount))
     self.server.sendRemote("bet", {
       "side": side,
       "round": self.round,
       "amount": amount
     })
-    if amount > player.balance:
-      warn("Betting more than balance, maximum balance placed as bet")
-      amount = player.balance
-    if amount < 0:
-      amount = 0
     self.bet[side] = amount
     if self.bet["A"] != None and self.bet["B"] != None:
       loop = asyncio.get_event_loop()
@@ -275,7 +276,7 @@ if __name__ == "__main__":
     port = 4000,
     initial_balance = (6000, 6800),
     prob_seq = list(random.randint(40, 70) / 100 for x in range(0, 20)),
-    # remote = SyncRemote("ws://localhost:1019")
+    remote = SyncRemote("ws://localhost:1019")
   )
   try:
     asyncio.run(server.run())

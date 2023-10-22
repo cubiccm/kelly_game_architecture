@@ -1,4 +1,4 @@
-const ws = new WebSocket("ws://localhost:8765");
+const ws = new WebSocket("ws://localhost:1019");
 const instr_queue = new Array();
 
 ws.addEventListener("open", (event) => {
@@ -91,9 +91,11 @@ const player_names = Array(2);
 function setPlayer(data) {
   if (data["side"] == "A") {
     document.getElementById("name-a").innerText = data["name"];
+    document.getElementById("timer-a").innerText = `Ready`;
     player_names[0] = data["name"];
   } else if (data["side"] == "B") {
     document.getElementById("name-b").innerText = data["name"];
+    document.getElementById("timer-b").innerText = `Ready`;
     player_names[1] = data["name"];
   }
 }
@@ -152,8 +154,8 @@ function switchSides(balance_diff) {
     setScroll(0);
     document.getElementById("name-a").style.opacity = 0;
     document.getElementById("name-b").style.opacity = 0;
-    document.getElementById("timer-a").style.innerText = "";
-    document.getElementById("timer-b").style.innerText = "";
+    document.getElementById("timer-a").innerText = "";
+    document.getElementById("timer-b").innerText = "";
     window.setTimeout(() => {
       document.getElementById("name-a").innerText = player_names[1];
       document.getElementById("name-b").innerText = player_names[0];
@@ -248,7 +250,7 @@ function endGame(data) {
 let timeout = window.setTimeout(processInstr, 30);
 
 function processInstr() {
-  let ms = 20;
+  let ms = 100;
   window.clearTimeout(timeout);
   if (instr_queue.length) {
     let instr = instr_queue[0];
@@ -264,9 +266,13 @@ function processInstr() {
         break;
       case "bet":
         setBet(instr["data"]);
+        if (instr["data"]["round"] > 25) ms = 2;
         break;
       case "result":
         setResult(instr["data"]);
+        if (instr["data"]["balance"][0] * instr["data"]["balance"][1] == 0) {
+          ms = 4;
+        }
         break;
       case "switchsides":
         ms = 3500;

@@ -26,7 +26,7 @@ class Client:
     while True:
       try:
         client_socket.send(str(message).encode())
-        data = client_socket.recv(8000).decode()
+        data = client_socket.recv(16000).decode()
       except:
         print("Server closed")
         break
